@@ -2371,7 +2371,7 @@ ol {
    Footer
    ============================================================ */
 .footer {
-  background: var(--dark);
+  background: #0e3a5d;
   color: rgba(248, 250, 252, 0.75);
 }
 
@@ -2386,13 +2386,19 @@ ol {
   display: flex;
   align-items: center;
   margin-bottom: 18px;
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
 .footer__logo {
-  height: 52px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
 .footer__about {

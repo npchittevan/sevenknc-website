@@ -2,7 +2,7 @@ import { FaWhatsapp, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa6
 import { products } from "../data/products.js";
 import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig.js";
 import { Icon } from "./icons.jsx";
-import logo from "../assets/logo.jpeg";
+import logo from "../assets/footer-logo.png";
 
 const SOCIAL_ICONS = {
   facebook: FaFacebook,
