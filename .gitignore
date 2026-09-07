@@ -1,0 +1,215 @@
+# ============================================================
+# SevenKNC Global Exim - Git Ignore Configuration
+# Excludes files and folders that should not be committed
+# ============================================================
+
+# ============================================================
+# Dependencies & Package Managers
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-store/
+.npm
+
+# ============================================================
+# Build & Distribution Output
+# ============================================================
+dist/
+build/
+.nuxt/
+.vuepress/dist/
+.cache/
+out/
+coverage/
+*.tsbuildinfo
+
+# ============================================================
+# Environment Variables & Secrets
+# ============================================================
+.env
+.env.local
+.env.*.local
+.env.prod.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.example
+secrets.json
+.secrets/
+
+# ============================================================
+# IDE & Editor Files
+# ============================================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-settings
+.editorconfig
+.prettierrc
+.eslintrc*
+
+# ============================================================
+# OS & System Files
+# ============================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+.directory
+*.lnk
+
+# ============================================================
+# Development & Testing Files
+# ============================================================
+.vite/
+.parcel-cache/
+.parcel-cache
+dist/
+build/
+
+# ============================================================
+# Logs & Temporary Files
+# ============================================================
+*.log
+logs/
+*.logs
+npm-debug.log*
+debug.log
+
+# ============================================================
+# Dependency Caches
+# ============================================================
+.cache
+.eslintcache
+.stylelintcache
+.jest-cache
+.nyc_output/
+
+# ============================================================
+# Source Data & Product Documentation
+# ============================================================
+# PDFs and source documentation (keep locally, don't commit)
+src/products\ Data/
+products\ Data/
+*.pdf
+!README.pdf
+!DOCUMENTATION.pdf
+
+# ============================================================
+# Temporary & Backup Files
+# ============================================================
+*.bak
+*.tmp
+*.temp
+*.backup
+*~
+.~*
+*.swp
+*.swo
+.DS_Store
+
+# ============================================================
+# Local Testing & Development
+# ============================================================
+.local/
+.test-results/
+test-results/
+.mocha_output
+
+# ============================================================
+# Database & Runtime Files
+# ============================================================
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+
+# ============================================================
+# Browser & Performance Files
+# ============================================================
+.browserslistrc
+.lighthouse/
+*.har
+
+# ============================================================
+# Miscellaneous Files
+# ============================================================
+*.orig
+*.rej
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf
+*.iml
+out/
+.gradle
+.m2/
+
+# ============================================================
+# OS-Specific Ignore
+# ============================================================
+# Windows
+[Dd]esktop.ini
+[Dd]esktop.ini.lnk
+$RECYCLE.BIN/
+ehthumbs.db
+Thumbs.db
+*.lnk
+
+# macOS
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Linux
+.directory
+.Trash-*
+
+# ============================================================
+# IDE Specific
+# ============================================================
+.idea/
+.vscode/settings.json
+.vscode/extensions.json
+.vscode/launch.json
+*.code-workspace
+
+# ============================================================
+# CI/CD & Build Artifacts
+# ============================================================
+ci/
+.github/workflows/*
+!.github/workflows/.gitkeep
+build-artifacts/
+*.tar.gz
+*.zip
+
+# ============================================================
+# Exception Rules (files that SHOULD be committed)
+# ============================================================
+!.gitkeep
+!.env.example
+!.env.development.example
+!.env.production.example
