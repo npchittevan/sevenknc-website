@@ -2093,6 +2093,14 @@ ol {
   transform: translateY(0);
 }
 
+.gallery__grid > .reveal:nth-last-child(2) {
+  grid-column: 2;
+}
+
+.gallery__grid > .reveal:last-child {
+  grid-column: 3;
+}
+
 /* ---------- Lightbox ---------- */
 .lightbox {
   position: fixed;
@@ -2808,6 +2816,11 @@ ol {
 
   .gallery__grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gallery__grid > .reveal:nth-last-child(2),
+  .gallery__grid > .reveal:last-child {
+    grid-column: auto;
   }
 
   .footer__top {
