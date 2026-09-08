@@ -134,7 +134,11 @@ export default function QuoteForm() {
                   <strong style={{ display: "block", fontSize: "0.78rem", color: "var(--muted)" }}>
                     Office
                   </strong>
-                  {SITE.addressLines[0]}
+                  {SITE.addressLines.map((line) => (
+                    <span key={line} style={{ display: "block" }}>
+                      {line}
+                    </span>
+                  ))}
                 </span>
               </li>
             </ul>
