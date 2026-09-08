@@ -70,7 +70,12 @@ export default function Contact() {
               >
                 <FaWhatsapp size={15} /> WhatsApp
               </a>
-              <a className="btn btn--outline-light" href={`mailto:${SITE.email}`}>
+              <a
+                className="btn btn--outline-light"
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(SITE.email)}&su=${encodeURIComponent("Business Enquiry - SevenKNC Global Exim")}&body=${encodeURIComponent("Hello SevenKNC Global Exim,\n\nI would like to know more about your dehydrated food products and export services.\n\nRegards,")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon name="email" size={15} /> Email Us
               </a>
               <a className="btn btn--gold" href="#quote">
