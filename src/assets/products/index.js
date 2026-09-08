@@ -11,7 +11,7 @@ import gingerPowder from "./ginger-powder.jpeg";
 import whiteOnionAlt from "./white-onion-alt.jpeg";
 import heroOnion from "./hero-onion.jpeg";
 import moringaPowder from "./moringa.png";
-import friedOnion from "./fried-onion.png";
+import friedOnion from "./fried-onion.jpeg";
 
 export const imageIndex = {
   "white-onion.jpeg": whiteOnion,
