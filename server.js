@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const port = Number(process.env.PORT) || 3000;
+const port = process.env.PORT || 3000;
 const host = "0.0.0.0";
 const distDirectory = fileURLToPath(new URL("./dist/", import.meta.url));
 
