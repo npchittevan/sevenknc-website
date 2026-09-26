@@ -78,6 +78,9 @@ export default function Contact() {
               >
                 <Icon name="email" size={15} /> Email Us
               </a>
+              <a className="btn btn--gold" href="/visiting-card" target="_blank" rel="noopener noreferrer">
+                Download Visiting Card
+              </a>
               <a className="btn btn--gold" href="#quote">
                 Request a Quote
               </a>
