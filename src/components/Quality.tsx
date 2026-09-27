@@ -49,6 +49,9 @@ export default function Quality() {
           {QUALITY_ITEMS.map((item, i) => (
             <Reveal key={item.title} delay={i % 3}>
               <div className="quality-card">
+                <span className="quality-card__step">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <span className="quality-card__icon">
                   <Icon name={item.icon} size={22} />
                 </span>
