@@ -68,13 +68,14 @@ export async function POST(request: Request) {
     .join("")}</table>`;
 
   try {
-    await sendEmail({
+    const { messageId } = await sendEmail({
       to: recipient,
       replyTo: fields.email || undefined,
       subject: `New B2B enquiry — ${[fields.fullName, fields.product].filter(Boolean).join(" — ") || "Website"}`,
       text,
       html,
     });
+    console.log("email.send.ok", { messageId, to: recipient });
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("email.send.failed", error);
