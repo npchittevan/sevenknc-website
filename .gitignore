@@ -24,7 +24,6 @@ build/
 .nuxt/
 .vuepress/dist/
 .cache/
-out/
 coverage/
 *.tsbuildinfo
 
@@ -162,7 +161,6 @@ test-results/
 .idea/dictionaries
 .idea/shelf
 *.iml
-out/
 .gradle
 .m2/
 

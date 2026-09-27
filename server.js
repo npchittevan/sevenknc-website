@@ -2,7 +2,6 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import nodemailer from "nodemailer";
 
 // Local development only: load env vars from .env.local (gitignored).
 // On the server, real environment variables take precedence via process.env.
@@ -37,18 +36,28 @@ const smtp = {
 const mailTo = process.env.MAIL_TO || smtp.user;
 const mailFrom = process.env.MAIL_FROM || `"SevenKNC Website" <${smtp.user}>`;
 
-const transporter =
-  smtp.user && smtp.pass
-    ? nodemailer.createTransport({
-        host: smtp.host,
-        port: smtp.port,
-        secure: smtp.secure,
-        auth: { user: smtp.user, pass: smtp.pass },
-      })
-    : null;
-
-if (!transporter) {
-  console.warn("Enquiry email disabled: set SMTP_USER, SMTP_PASS and MAIL_TO env vars.");
+// nodemailer is imported lazily so server.js starts even when node_modules
+// is absent on the server (static files keep serving; email endpoint
+// degrades to a graceful 503 instead of crashing the whole app).
+let transporterPromise = null;
+function getTransporter() {
+  if (!smtp.user || !smtp.pass) return Promise.resolve(null);
+  if (!transporterPromise) {
+    transporterPromise = import("nodemailer")
+      .then(({ default: nodemailer }) =>
+        nodemailer.createTransport({
+          host: smtp.host,
+          port: smtp.port,
+          secure: smtp.secure,
+          auth: { user: smtp.user, pass: smtp.pass },
+        }),
+      )
+      .catch((error) => {
+        console.error("nodemailer unavailable:", error);
+        return null;
+      });
+  }
+  return transporterPromise;
 }
 
 const ENQUIRY_FIELDS = [
@@ -119,7 +128,9 @@ async function handleEnquiry(request, response) {
   };
 
   if (request.method !== "POST") return send(405, { ok: false, error: "method not allowed" });
-  if (!transporter || !mailTo) return send(503, { ok: false, error: "email not configured" });
+  if (!mailTo) return send(503, { ok: false, error: "email not configured" });
+  const transporter = await getTransporter();
+  if (!transporter) return send(503, { ok: false, error: "email not configured" });
 
   let fields;
   try {
@@ -191,7 +202,7 @@ function resolveFile(requestUrl) {
 const server = createServer((request, response) => {
   const pathname = decodeURIComponent((request.url || "/").split("?")[0]);
 
-  if (pathname === ENQUIRY_PATH) {
+  if (pathname === ENQUIRY_PATH || pathname === `${ENQUIRY_PATH}/`) {
     handleEnquiry(request, response);
     return;
   }
