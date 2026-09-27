@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const port = process.env.PORT || 3000;
 const host = "0.0.0.0";
 const distDirectory = fileURLToPath(new URL("./dist/", import.meta.url));
+const vCardDirectory = fileURLToPath(new URL("./src/assets/products/", import.meta.url));
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
@@ -24,32 +25,9 @@ const contentTypes = {
   ".woff2": "font/woff2",
 };
 
-function buildVCard() {
-  const name = "Kulashree Chittevan";
-  const phone = "+917499449790";
-  const email = "sevenknc.globalexim@gmail.com";
-  const website = "https://sevenkncglobalexim.com/";
-  const org = "SevenKNC Global Exim";
-  const officeAddress = [
-    "A1707, R16, Life Republic Township",
-    "Near Gaikwad Nagar, Jambe",
-    "Pune 411033, Maharashtra, India",
-  ].join(", ");
-
-  return [
-    "BEGIN:VCARD",
-    "VERSION:3.0",
-    `FN:${name}`,
-    "N:Chittevan;Kulashree;;;",
-    `ORG:${org}`,
-    "TITLE:Business Development",
-    `TEL;TYPE=CELL:${phone}`,
-    `EMAIL;TYPE=INTERNET:${email}`,
-    `URL:${website}`,
-    `ADR;TYPE=WORK:;;;${officeAddress};Pune;Maharashtra;411033;India`,
-    "NOTE:Dehydrated food products and export services.",
-    "END:VCARD",
-  ].join("\r\n");
+function getStoredVCardFilePath() {
+  const filePath = join(vCardDirectory, "SevenKNC-Visiting-Card.vcf");
+  return existsSync(filePath) ? filePath : null;
 }
 
 function getVisitingCardPage(vCardDownloadUrl) {
@@ -187,12 +165,19 @@ const server = createServer((request, response) => {
   }
 
   if (pathname === "/visiting-card.vcf") {
-    const vCardData = buildVCard();
+    const vCardFilePath = getStoredVCardFilePath();
+
+    if (!vCardFilePath) {
+      response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      response.end("Visiting card file not found.");
+      return;
+    }
+
     response.writeHead(200, {
       "Content-Type": "text/vcard; charset=utf-8",
       "Content-Disposition": "attachment; filename=SevenKNC-Visiting-Card.vcf",
     });
-    response.end(vCardData);
+    createReadStream(vCardFilePath).pipe(response);
     return;
   }
 
