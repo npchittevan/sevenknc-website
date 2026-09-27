@@ -1,9 +1,9 @@
-import Reveal from "./Reveal.jsx";
+import Reveal from "./Reveal";
 
 export default function SectionHeading({
   eyebrow,
   title,
-  subtitle,
+  subtitle = null,
   light = false,
   center = true,
 }) {

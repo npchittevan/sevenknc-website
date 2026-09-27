@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { products, productFilters } from "../data/products.js";
-import { imageIndex } from "../assets/products/index.js";
-import SectionHeading from "./SectionHeading.jsx";
-import ProductCard from "./ProductCard.jsx";
-import ProductDetail from "./ProductDetail.jsx";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { products, productFilters } from "../data/products";
+import { imageIndex } from "../assets/products/index";
+import SectionHeading from "./SectionHeading";
+import ProductCard from "./ProductCard";
+import ProductDetail from "./ProductDetail";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 function SelectFilter({ label, options, value, onChange }) {
   return (

@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
-import { SITE } from "../data/siteConfig.js";
-import SectionHeading from "./SectionHeading.jsx";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { SITE } from "../data/siteConfig";
+import SectionHeading from "./SectionHeading";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 // Renders only when a video asset is supplied via SITE.videoUrl.
 export default function VideoSection() {

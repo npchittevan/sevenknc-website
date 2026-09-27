@@ -1,6 +1,6 @@
-import SectionHeading from "./SectionHeading.jsx";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import SectionHeading from "./SectionHeading";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 const WHY_ITEMS = [
   {

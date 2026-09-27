@@ -1,5 +1,5 @@
-import { Icon } from "./icons.jsx";
-import Reveal from "./Reveal.jsx";
+import { Icon } from "./icons";
+import Reveal from "./Reveal";
 import apedaLogo from "../assets/apeda.png";
 import fssaiLogo from "../assets/FSSAI_logo.png";
 
@@ -30,13 +30,13 @@ const CERTIFICATIONS = [
   {
     title: "APEDA Registered",
     subtitle: "Agricultural & Processed Food Products Export Development Authority",
-    logo: apedaLogo,
+    logo: apedaLogo.src,
     alt: "APEDA Logo",
   },
   {
     title: "FSSAI Licensed",
     subtitle: "Lic No 11526996000769",
-    logo: fssaiLogo,
+    logo: fssaiLogo.src,
     alt: "FSSAI Logo",
   },
 ];

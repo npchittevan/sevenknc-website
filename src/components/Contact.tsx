@@ -1,7 +1,7 @@
 import { FaWhatsapp } from "react-icons/fa6";
-import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig.js";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 export default function Contact() {
   return (

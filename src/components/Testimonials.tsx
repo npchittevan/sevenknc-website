@@ -1,8 +1,8 @@
 import { FaStar } from "react-icons/fa6";
-import { testimonials, trustPartnership } from "../data/testimonials.js";
-import SectionHeading from "./SectionHeading.jsx";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { testimonials, trustPartnership } from "../data/testimonials";
+import SectionHeading from "./SectionHeading";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 function Partnership() {
   return (

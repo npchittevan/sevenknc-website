@@ -1,7 +1,7 @@
-import { industries } from "../data/industries.js";
-import SectionHeading from "./SectionHeading.jsx";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { industries } from "../data/industries";
+import SectionHeading from "./SectionHeading";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 export default function Industries() {
   return (

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa6";
-import { galleryImages } from "../assets/products/index.js";
-import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig.js";
-import { Icon } from "./icons.jsx";
+import { galleryImages } from "../assets/products/index";
+import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig";
+import { Icon } from "./icons";
 
 const HERO_POINTS = [
   { icon: "leaf", text: "Dehydrated Onion, Garlic, Ginger & Moringa" },

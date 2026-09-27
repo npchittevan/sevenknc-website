@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa6";
-import { products, PRODUCT_FORMS } from "../data/products.js";
-import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig.js";
-import { enquiryStore } from "../store/enquiryStore.js";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { products, PRODUCT_FORMS } from "../data/products";
+import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig";
+import { enquiryStore } from "../store/enquiryStore";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 const initialForm = {
   fullName: "",
@@ -37,16 +37,16 @@ function Field({ id, label, ...rest }) {
 }
 
 export default function QuoteForm() {
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState(() => ({
+    ...initialForm,
+    product: enquiryStore.getProduct(),
+  }));
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = enquiryStore.subscribe((product) => {
+    return enquiryStore.subscribe((product) => {
       setForm((prev) => ({ ...prev, product }));
     });
-    const current = enquiryStore.getProduct();
-    if (current) setForm((prev) => ({ ...prev, product: current }));
-    return unsubscribe;
   }, []);
 
   const update = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
@@ -76,6 +76,14 @@ export default function QuoteForm() {
     ]
       .filter(Boolean)
       .join("\n");
+    // Best-effort email notification via server endpoint. Failures are
+    // swallowed so the existing WhatsApp flow and UI stay unchanged.
+    fetch("/api/enquiry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+      keepalive: true,
+    }).catch(() => {});
     window.open(whatsappLink(summary), "_blank", "noopener,noreferrer");
   };
 

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { galleryImages } from "../assets/products/index.js";
-import SectionHeading from "./SectionHeading.jsx";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { galleryImages } from "../assets/products/index";
+import SectionHeading from "./SectionHeading";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 export default function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState(null);

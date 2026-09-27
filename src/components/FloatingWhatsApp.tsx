@@ -1,5 +1,5 @@
 import { FaWhatsapp } from "react-icons/fa6";
-import { whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig.js";
+import { whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig";
 
 export default function FloatingWhatsApp() {
   return (

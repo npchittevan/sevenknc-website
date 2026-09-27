@@ -1,6 +1,6 @@
 import aboutImg from "../../aboutus.png";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 const AUDIENCES = [
   "Importers",
@@ -19,7 +19,7 @@ export default function About() {
           <Reveal className="about__visual">
             <div className="about__img">
               <img
-                src={aboutImg}
+                src={aboutImg.src}
                 alt="Dehydrated agricultural food products sourced by SevenKNC Global Exim"
                 loading="lazy"
               />

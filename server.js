@@ -2,11 +2,162 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import nodemailer from "nodemailer";
+
+// Local development only: load env vars from .env.local (gitignored).
+// On the server, real environment variables take precedence via process.env.
+try {
+  process.loadEnvFile?.(".env.local");
+} catch {
+  // .env.local not present — use server environment variables.
+}
 
 const port = process.env.PORT || 3000;
 const host = "0.0.0.0";
-const distDirectory = fileURLToPath(new URL("./dist/", import.meta.url));
-const vCardDirectory = fileURLToPath(new URL("./src/assets/products/", import.meta.url));
+const outDirectory = fileURLToPath(new URL("./out/", import.meta.url));
+
+// ---------------------------------------------------------------------------
+// Enquiry email endpoint (POST /api/enquiry)
+// SMTP credentials come from server environment variables — never committed.
+// Required env vars: SMTP_USER, SMTP_PASS, MAIL_TO
+// Optional env vars: SMTP_HOST, SMTP_PORT, SMTP_SECURE, MAIL_FROM
+// ---------------------------------------------------------------------------
+const ENQUIRY_PATH = "/api/enquiry";
+const MAX_BODY_BYTES = 64 * 1024;
+
+const smtp = {
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: Number(process.env.SMTP_PORT || 465),
+  secure: (process.env.SMTP_SECURE || "true") !== "false",
+  user: process.env.SMTP_USER || "",
+  // Gmail app passwords may be pasted with spaces; strip them.
+  pass: (process.env.SMTP_PASS || "").replace(/\s+/g, ""),
+};
+
+const mailTo = process.env.MAIL_TO || smtp.user;
+const mailFrom = process.env.MAIL_FROM || `"SevenKNC Website" <${smtp.user}>`;
+
+const transporter =
+  smtp.user && smtp.pass
+    ? nodemailer.createTransport({
+        host: smtp.host,
+        port: smtp.port,
+        secure: smtp.secure,
+        auth: { user: smtp.user, pass: smtp.pass },
+      })
+    : null;
+
+if (!transporter) {
+  console.warn("Enquiry email disabled: set SMTP_USER, SMTP_PASS and MAIL_TO env vars.");
+}
+
+const ENQUIRY_FIELDS = [
+  ["fullName", "Name"],
+  ["company", "Company"],
+  ["email", "Email"],
+  ["phone", "Phone"],
+  ["country", "Country"],
+  ["product", "Product"],
+  ["form", "Product Form"],
+  ["quantity", "Quantity"],
+  ["grade", "Grade/Spec"],
+  ["packaging", "Packaging"],
+  ["destCountry", "Destination Country"],
+  ["destPort", "Destination Port"],
+  ["timeline", "Timeline"],
+  ["shipmentTerms", "Shipment Terms"],
+  ["documentation", "Documentation"],
+  ["privateLabel", "Private Label"],
+  ["sample", "Samples"],
+  ["additional", "Additional Requirements"],
+];
+
+const escapeHtml = (value) =>
+  String(value).replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+  );
+
+function sanitizeFields(body) {
+  const fields = {};
+  for (const [key] of ENQUIRY_FIELDS) {
+    const value = body?.[key];
+    if (value == null) continue;
+    fields[key] = String(value).slice(0, 2000).trim();
+  }
+  return fields;
+}
+
+function readJsonBody(request) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const chunks = [];
+    request.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > MAX_BODY_BYTES) {
+        reject(new Error("payload too large"));
+        request.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    request.on("end", () => {
+      try {
+        resolve(JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}"));
+      } catch (error) {
+        reject(error);
+      }
+    });
+    request.on("error", reject);
+  });
+}
+
+async function handleEnquiry(request, response) {
+  const send = (status, payload) => {
+    response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify(payload));
+  };
+
+  if (request.method !== "POST") return send(405, { ok: false, error: "method not allowed" });
+  if (!transporter || !mailTo) return send(503, { ok: false, error: "email not configured" });
+
+  let fields;
+  try {
+    fields = sanitizeFields(await readJsonBody(request));
+  } catch {
+    return send(400, { ok: false, error: "invalid request body" });
+  }
+
+  const rows = ENQUIRY_FIELDS.filter(([key]) => fields[key]);
+  const text = [
+    "New B2B enquiry from sevenkncglobalexim.com",
+    "",
+    ...rows.map(([key, label]) => `${label}: ${fields[key]}`),
+  ].join("\n");
+  const html = `<h2>New B2B enquiry</h2><table cellpadding="6" cellspacing="0" border="0">${rows
+    .map(
+      ([key, label]) =>
+        `<tr><td style="vertical-align:top"><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(
+          fields[key],
+        ).replace(/\n/g, "<br>")}</td></tr>`,
+    )
+    .join("")}</table>`;
+
+  try {
+    await transporter.sendMail({
+      from: mailFrom,
+      to: mailTo,
+      replyTo: fields.email || undefined,
+      subject: `New B2B enquiry — ${[fields.fullName, fields.product].filter(Boolean).join(" — ") || "Website"}`,
+      text,
+      html,
+    });
+    send(200, { ok: true });
+  } catch (error) {
+    console.error("Enquiry email failed:", error);
+    send(502, { ok: false, error: "email send failed" });
+  }
+}
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
@@ -16,173 +167,36 @@ const contentTypes = {
   ".jpeg": "image/jpeg",
   ".jpg": "image/jpeg",
   ".js": "text/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8",
+  ".json": "application/json",
   ".png": "image/png",
   ".svg": "image/svg+xml",
+  ".txt": "text/plain; charset=utf-8",
   ".vcf": "text/vcard; charset=utf-8",
   ".webp": "image/webp",
   ".woff": "font/woff",
   ".woff2": "font/woff2",
 };
 
-function getStoredVCardFilePath() {
-  const filePath = join(vCardDirectory, "SevenKNC-Visiting-Card.vcf");
-  return existsSync(filePath) ? filePath : null;
-}
-
-function getVisitingCardPage(vCardDownloadUrl) {
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SevenKNC Visiting Card</title>
-    <style>
-      :root {
-        --primary: #1a56db;
-        --primary-dark: #1040a0;
-        --dark: #0c1929;
-        --white: #ffffff;
-        --cream: #f0f5ff;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #edf4ff, #f7fafc);
-        color: var(--dark);
-        display: grid;
-        place-items: center;
-        min-height: 100vh;
-      }
-      .card {
-        width: min(680px, calc(100% - 32px));
-        background: var(--white);
-        border-radius: 22px;
-        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
-        padding: 28px;
-      }
-      .brand {
-        color: var(--primary-dark);
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-      .subtitle {
-        color: #475569;
-        margin-bottom: 22px;
-      }
-      .content {
-        display: grid;
-        grid-template-columns: 1.05fr 0.95fr;
-        gap: 24px;
-        align-items: center;
-      }
-      .details {
-        display: grid;
-        gap: 10px;
-        font-size: 0.98rem;
-        line-height: 1.6;
-      }
-      .details strong { color: var(--primary-dark); }
-      .btn {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 12px 18px;
-        border-radius: 10px;
-        background: var(--primary);
-        color: var(--white);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .btn.secondary {
-        background: var(--cream);
-        color: var(--primary-dark);
-        margin-left: 10px;
-      }
-      .qr {
-        text-align: center;
-      }
-      .qr img {
-        width: min(220px, 100%);
-        border: 10px solid #eff6ff;
-        border-radius: 18px;
-        background: #fff;
-      }
-      @media (max-width: 640px) {
-        .content { grid-template-columns: 1fr; }
-        .actions { display: grid; }
-        .btn.secondary { margin-left: 0; margin-top: 10px; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <div class="brand">SevenKNC Global Exim</div>
-      <div class="subtitle">Business Contact Card</div>
-      <div class="content">
-        <div class="details">
-          <div><strong>Name:</strong> Kulashree Chittevan</div>
-          <div><strong>Phone:</strong> +91 7499449790</div>
-          <div><strong>WhatsApp:</strong> +91 7499449790</div>
-          <div><strong>Email:</strong> sevenknc.globalexim@gmail.com</div>
-          <div><strong>Office:</strong> A1707, R16, Life Republic Township, Near Gaikwad Nagar, Jambe, Pune 411033, Maharashtra, India</div>
-          <div><strong>Website:</strong> https://sevenkncglobalexim.com/</div>
-          <div class="actions">
-            <a class="btn" href="${vCardDownloadUrl}">Download vCard</a>
-            <a class="btn secondary" href="/">Back to website</a>
-          </div>
-        </div>
-        <div class="qr">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(vCardDownloadUrl)}" alt="SevenKNC visiting card QR code" />
-        </div>
-      </div>
-    </div>
-  </body>
-</html>`;
-}
-
-function getFilePath(requestUrl) {
+function resolveFile(requestUrl) {
   const requestedPath = decodeURIComponent(requestUrl.split("?")[0]);
   const relativePath = normalize(requestedPath).replace(/^([/\\])+/, "");
-  const filePath = join(distDirectory, relativePath);
+  const basePath = join(outDirectory, relativePath);
 
-  return filePath.startsWith(distDirectory) ? filePath : null;
+  if (!basePath.startsWith(outDirectory)) return null;
+
+  const candidates = [basePath, join(basePath, "index.html"), `${basePath}.html`];
+  return candidates.find((p) => existsSync(p) && statSync(p).isFile()) || null;
 }
 
 const server = createServer((request, response) => {
-  const requestUrl = request.url || "/";
-  const pathname = decodeURIComponent(requestUrl.split("?")[0]);
+  const pathname = decodeURIComponent((request.url || "/").split("?")[0]);
 
-  if (pathname === "/visiting-card" || pathname === "/visiting-card/") {
-    const protocol = request.headers["x-forwarded-proto"] || "http";
-    const hostHeader = request.headers.host || `localhost:${port}`;
-    const vCardDownloadUrl = `${protocol}://${hostHeader}/visiting-card.vcf`;
-
-    response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-    response.end(getVisitingCardPage(vCardDownloadUrl));
+  if (pathname === ENQUIRY_PATH) {
+    handleEnquiry(request, response);
     return;
   }
 
-  if (pathname === "/visiting-card.vcf") {
-    const vCardFilePath = getStoredVCardFilePath();
-
-    if (!vCardFilePath) {
-      response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      response.end("Visiting card file not found.");
-      return;
-    }
-
-    response.writeHead(200, {
-      "Content-Type": "text/vcard; charset=utf-8",
-      "Content-Disposition": "attachment; filename=SevenKNC-Visiting-Card.vcf",
-    });
-    createReadStream(vCardFilePath).pipe(response);
-    return;
-  }
-
-  const filePath = getFilePath(requestUrl);
-  const requestedFile = filePath && existsSync(filePath) && statSync(filePath).isFile() ? filePath : join(distDirectory, "index.html");
+  const requestedFile = resolveFile(request.url || "/") || join(outDirectory, "index.html");
 
   if (!existsSync(requestedFile)) {
     response.writeHead(503, { "Content-Type": "text/plain; charset=utf-8" });

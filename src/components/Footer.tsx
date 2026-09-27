@@ -1,7 +1,7 @@
 import { FaWhatsapp, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa6";
-import { products } from "../data/products.js";
-import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig.js";
-import { Icon } from "./icons.jsx";
+import { products } from "../data/products";
+import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig";
+import { Icon } from "./icons";
 import logo from "../assets/footer-logo.png";
 
 const SOCIAL_ICONS = {
@@ -32,7 +32,7 @@ export default function Footer() {
         <div className="footer__top">
           <div>
             <span className="footer__brand">
-              <img className="footer__logo" src={logo} alt={`${SITE.name} logo`} />
+              <img className="footer__logo" src={logo.src} alt={`${SITE.name} logo`} />
             </span>
             <p className="footer__about">
               An India-based trading and export company supplying premium dehydrated agricultural

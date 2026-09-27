@@ -1,6 +1,6 @@
-import { buyerRequirementOptions } from "../data/services.js";
-import Reveal from "./Reveal.jsx";
-import { Icon } from "./icons.jsx";
+import { buyerRequirementOptions } from "../data/services";
+import Reveal from "./Reveal";
+import { Icon } from "./icons";
 
 export default function BuyerRequirement() {
   return (

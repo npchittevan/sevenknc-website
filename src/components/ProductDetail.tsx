@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa6";
-import { whatsappLink } from "../data/siteConfig.js";
-import { enquiryStore } from "../store/enquiryStore.js";
-import { Icon } from "./icons.jsx";
+import { whatsappLink } from "../data/siteConfig";
+import { enquiryStore } from "../store/enquiryStore";
+import { Icon } from "./icons";
 
 export default function ProductDetail({ product, onClose }) {
   const [activeForm, setActiveForm] = useState(0);
-
-  useEffect(() => {
+  const [prevProduct, setPrevProduct] = useState(product);
+  if (prevProduct !== product) {
+    setPrevProduct(product);
     setActiveForm(0);
-  }, [product]);
+  }
 
   useEffect(() => {
     const onKey = (e) => {

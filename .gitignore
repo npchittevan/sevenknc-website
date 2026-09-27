@@ -213,3 +213,7 @@ build-artifacts/
 !.env.example
 !.env.development.example
 !.env.production.example
+
+# Next.js
+.next/
+next-env.d.ts
