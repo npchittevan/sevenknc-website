@@ -6,11 +6,13 @@ export const SITE = {
   shortName: "SevenKNC",
   tagline: "Bringing Nature's Best to the World",
   type: "Trading and Export Company",
+  contactName: "Kulashree Chittevan",
   location: "Pune, Maharashtra, India",
   phoneDisplay: "+91 7499449790",
   phoneE164: "+917499449790",
   whatsapp: "917499449790",
   email: "sevenknc.globalexim@gmail.com",
+  websiteUrl: "https://sevenkncglobalexim.com/",
   addressLines: [
     "A1707, R16, Life Republic Township",
     "Near Gaikwad Nagar, Jambe",
