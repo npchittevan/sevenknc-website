@@ -11,7 +11,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-package-lock.json
 yarn.lock
 .pnpm-store/
 .npm
@@ -24,7 +23,6 @@ build/
 .nuxt/
 .vuepress/dist/
 .cache/
-out/
 coverage/
 *.tsbuildinfo
 
@@ -162,7 +160,6 @@ test-results/
 .idea/dictionaries
 .idea/shelf
 *.iml
-out/
 .gradle
 .m2/
 
@@ -213,3 +210,7 @@ build-artifacts/
 !.env.example
 !.env.development.example
 !.env.production.example
+
+# Next.js
+.next/
+next-env.d.ts
