@@ -79,6 +79,36 @@
   background: #fff;
 }
 
+/* ---------- Dark theme ---------- */
+html[data-theme="dark"] .vcard-page {
+  background: linear-gradient(135deg, #060b16, #0d1730);
+  color: #d9e2f2;
+}
+
+html[data-theme="dark"] .vcard-card {
+  background: #101a30;
+  border: 1px solid #223252;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="dark"] .vcard-brand,
+html[data-theme="dark"] .vcard-details strong {
+  color: #9db9ee;
+}
+
+html[data-theme="dark"] .vcard-subtitle {
+  color: #93a5c4;
+}
+
+html[data-theme="dark"] .vcard-btn.secondary {
+  background: rgba(125, 164, 255, 0.14);
+  color: #bcd0f7;
+}
+
+html[data-theme="dark"] .vcard-qr img {
+  border-color: #223252;
+}
+
 @media (max-width: 640px) {
   .vcard-content {
     grid-template-columns: 1fr;

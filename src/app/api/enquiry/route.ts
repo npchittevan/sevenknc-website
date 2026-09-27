@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendEmail } from "../../../server/email";
+import { query } from "../../../server/db";
 
 export const runtime = "nodejs";
 
@@ -50,6 +51,28 @@ export async function POST(request: Request) {
     const value = body?.[key];
     if (value == null) continue;
     fields[key] = String(value).slice(0, 2000).trim();
+  }
+
+  // Persist to the admin panel's inquiry list — best effort; a DB
+  // hiccup must not block the notification email below.
+  try {
+    await query(
+      `INSERT INTO inquiries (name, company, email, phone, country, product, subject, message, payload)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        fields.fullName || "Unknown",
+        fields.company || null,
+        fields.email || "no-email@provided",
+        fields.phone || null,
+        fields.country || fields.destCountry || null,
+        fields.product || null,
+        [fields.product, fields.quantity].filter(Boolean).join(" — ") || "Website enquiry",
+        fields.additional || null,
+        JSON.stringify(fields),
+      ],
+    );
+  } catch (error) {
+    console.error("inquiry.persist.failed", error);
   }
 
   const rows = ENQUIRY_FIELDS.filter(([key]) => fields[key]);

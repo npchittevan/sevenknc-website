@@ -61,6 +61,9 @@ const websiteJsonLd = {
     "SevenKNC Global Exim supplies dehydrated onion, garlic, ginger and moringa products for global B2B buyers.",
 };
 
+// Runs before first paint so the correct theme is applied without a flash.
+const themeInitScript = `(function(){try{var t=localStorage.getItem("sevenknc-theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","light")}})();`;
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -79,6 +82,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body suppressHydrationWarning>{children}</body>
     </html>

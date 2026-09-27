@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { SITE, whatsappLink, WHATSAPP_MESSAGES } from "../data/siteConfig";
 import { Icon } from "./icons";
+import ThemeToggle from "./ThemeToggle";
 import logo from "../assets/logo.jpeg";
+import footerLogo from "../assets/footer-logo.png";
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -39,7 +41,13 @@ export default function Navbar() {
       <header className={`navbar${scrolled ? " navbar--scrolled" : ""}`}>
         <div className="container navbar__inner">
           <a href="#home" className="navbar__brand" aria-label={`${SITE.name} home`}>
-            <img className="navbar__logo" src={logo.src} alt={`${SITE.name} logo`} />
+            <img className="navbar__logo navbar__logo--light" src={logo.src} alt={`${SITE.name} logo`} />
+            <img
+              className="navbar__logo navbar__logo--dark"
+              src={footerLogo.src}
+              alt=""
+              aria-hidden="true"
+            />
           </a>
 
           <nav className="navbar__links" aria-label="Primary navigation">
@@ -54,6 +62,7 @@ export default function Navbar() {
             <a className="btn btn--primary btn--sm" href="#quote">
               Request a Quote
             </a>
+            <ThemeToggle />
             <button
               className="navbar__burger"
               aria-label="Open menu"
@@ -70,11 +79,20 @@ export default function Navbar() {
       <div className={`mobile-menu${open ? " mobile-menu--open" : ""}`} aria-hidden={!open}>
         <div className="mobile-menu__top">
           <span className="mobile-menu__brand">
-            <img className="mobile-menu__logo" src={logo.src} alt={`${SITE.name} logo`} />
+            <img className="mobile-menu__logo mobile-menu__logo--light" src={logo.src} alt={`${SITE.name} logo`} />
+            <img
+              className="mobile-menu__logo mobile-menu__logo--dark"
+              src={footerLogo.src}
+              alt=""
+              aria-hidden="true"
+            />
           </span>
-          <button className="mobile-menu__close" aria-label="Close menu" onClick={close}>
-            <Icon name="close" size={20} />
-          </button>
+          <div className="mobile-menu__top-actions">
+            <ThemeToggle />
+            <button className="mobile-menu__close" aria-label="Close menu" onClick={close}>
+              <Icon name="close" size={20} />
+            </button>
+          </div>
         </div>
 
         <nav className="mobile-menu__links" aria-label="Mobile navigation">
